@@ -4,7 +4,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "watch": "nodemon app.js"
+    "watch": "nodemon app.js",
+    "push": "git add . && git commit -m 'push' && git push origin master"
   },
   "keywords": [],
   "author": "",
