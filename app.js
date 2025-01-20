@@ -11,7 +11,7 @@ const app = express();
 const port = 3001;
 
 const corsOptions = {
-  origin: "http://localhost:3000",
+  origin: "*", // This allows all origins to access the API
   optionsSuccessStatus: 200,
 };
 
