@@ -25,6 +25,8 @@ const client = new MongoClient(uri, {
     strict: true,
     deprecationErrors: true,
   },
+  keepAlive: true,
+  socketTimeoutMS: 0, // Prevent connection timeout
 });
 
 // Connect to the MongoDB client
@@ -44,6 +46,16 @@ async function run() {
 
 // Run the connection function
 run().catch(console.dir);
+
+// Keep MongoDB connection alive
+setInterval(async () => {
+  try {
+    await client.db("admin").command({ ping: 1 });
+    console.log("Pinged MongoDB to keep the connection alive");
+  } catch (error) {
+    console.error("Error pinging MongoDB:", error);
+  }
+}, 1000 * 60 * 5); // Every 5 minutes
 
 // Define the route to fetch scores
 app.get("/api/scores", async (req, res) => {
@@ -85,8 +97,8 @@ app.post("/api/scores", async (req, res) => {
     const scores = await dbo.collection("scores").insertOne(req.body);
     res.send(scores);
   } catch (error) {
-    console.error("Error fetching scores:", error);
-    res.status(500).send("Error fetching scores");
+    console.error("Error inserting score:", error);
+    res.status(500).send("Error inserting score");
   }
 });
 
@@ -108,6 +120,14 @@ app.delete("/api/scores/:id", async (req, res) => {
     res.status(500).send("Error deleting score");
   }
 });
+
 app.listen(port, () => {
   console.log(`Server is running at http://localhost:${port}`);
+});
+
+// Graceful shutdown
+process.on("SIGINT", async () => {
+  console.log("Shutting down gracefully...");
+  await client.close();
+  process.exit(0);
 });
