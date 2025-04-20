@@ -25,8 +25,7 @@ const client = new MongoClient(uri, {
     strict: true,
     deprecationErrors: true,
   },
-  keepAlive: true,
-  socketTimeoutMS: 0, // Prevent connection timeout
+  socketTimeoutMS: 0, // Keeps sockets open indefinitely
 });
 
 // Connect to the MongoDB client
